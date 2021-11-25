@@ -1,8 +1,7 @@
 import numpy as np
 import pandas as pd
 
-
-visual_field = np.pi*120/180
+from settings import *
 
 
 class Star:
@@ -13,14 +12,19 @@ class Star:
 
 
 def coord2angles(x, y, z):
-    phi = np.arctan2(z, x) #horizontal
-    theta = np.arctan2(y, np.sqrt(x**2+z**2)) #vertical
+    phi = np.arctan2(z, x)  # horizontal
+    theta = np.arctan2(y, np.sqrt(x**2+z**2))  # vertical
     return phi, theta
 
 
-def initialise_stars():
+def init():
+    """инициализация модуля, загружает данные из файла с данными в глобальный массив stars"""
 
-    data_frame = pd.read_csv('hygdata_v3.csv')
+    global stars
+
+    #data_frame = pd.read_csv(r"D:\ucheba\python\Sky_drip\project\hygdata_v3.csv")
+    data_frame = pd.read_csv(__file__[:-7]+'hygdata_v3.csv')
+
     num_stars = len(data_frame)
     x = data_frame['x'].values
     y = data_frame['y'].values
@@ -35,15 +39,17 @@ def initialise_stars():
     for i in range(num_stars):
         stars.append(Star(phi[i], theta[i], brightness[i]))
 
-    return stars
 
+def what_we_see(hor_angle, vert_angle, visual_field):
+    global stars
 
-def what_we_see(hor_angle, vert_angle, stars):
     visible_stars = []
 
     for a_star in stars:
         if abs(a_star.phi - hor_angle) <= visual_field / 2 and abs(a_star.theta - vert_angle) <= visual_field / 2:
-            visible_stars.append(a_star)
+            visible_star = Star(a_star.phi, a_star.theta, a_star.brightness)
+            visible_star.phi -= hor_angle
+            visible_star.theta -= vert_angle
+            visible_stars.append(visible_star)
 
     return visible_stars
-
