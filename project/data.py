@@ -30,22 +30,35 @@ def init():
     y = data_frame['y'].values
     z = data_frame['z'].values
     phi, theta = coord2angles(x, y, z)
+    phi = phi.tolist()
+    theta = theta.tolist()
     mag = data_frame['mag'].values
     hundreds = np.array([100 for i in range(num_stars)])
-    brightness = np.power(hundreds, mag / 5)
+    brightness = np.power(hundreds, mag / 5).tolist()
+    mag = mag.tolist()
     not_null_sum = 0
     not_null_counter = 0
-    for i in range(len(mag)):
+    #for i in range(len(mag)):
+     #   if mag[i] > 6.5:
+      #      brightness[i] = 0
+       # else:
+        #    not_null_sum += brightness[i]
+         #   not_null_counter += 1
+    i = 0
+    while i < len(mag):
         if mag[i] > 6.5:
-            brightness[i] = 0
+            #print(i, len(brightness), len(phi), len(theta))
+            del brightness[i]
+            del mag[i]
+            del phi[i]
+            del theta[i]
         else:
-            not_null_sum += brightness[i]
-            not_null_counter += 1
-
-
+            i += 1
     #brightness = brightness * 255.0/(np.max(brightness) - np.min(brightness))
-    scale = 255.0*not_null_counter/not_null_sum
+    scale = 255.0/np.mean(brightness)
     brightness = [min(255, i*scale) for i in brightness]
+
+    num_stars = len(brightness)
 
     stars = []
 
