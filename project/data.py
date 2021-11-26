@@ -1,6 +1,6 @@
 import numpy as np
 import pandas as pd
-import math
+
 from settings import *
 
 
@@ -42,6 +42,7 @@ def init():
             not_null_sum += brightness[i]
             not_null_counter += 1
 
+
     #brightness = brightness * 255.0/(np.max(brightness) - np.min(brightness))
     scale = 255.0*not_null_counter/not_null_sum
     brightness = [min(255, i*scale) for i in brightness]
@@ -58,9 +59,10 @@ def what_we_see(hor_angle, vert_angle, visual_field):
     visible_stars = []
 
     for a_star in stars:
-        if abs(a_star.phi - hor_angle) % np.pi <= visual_field / 2 and abs(a_star.theta - vert_angle) % np.pi   <= visual_field / 2:
-            visible_star = Star((a_star.phi - hor_angle) % np.pi, (a_star.theta - vert_angle) % np.pi, a_star.brightness)
-
+        if abs(a_star.phi - hor_angle) <= visual_field / 2 and abs(a_star.theta - vert_angle) <= visual_field / 2:
+            visible_star = Star(a_star.phi, a_star.theta, a_star.brightness)
+            visible_star.phi -= hor_angle
+            visible_star.theta -= vert_angle
             visible_stars.append(visible_star)
 
     return visible_stars
