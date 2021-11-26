@@ -2,6 +2,8 @@ import numpy as np
 import pygame
 import math
 
+
+
 from pygame.version import ver
 
 import data
@@ -32,7 +34,7 @@ FPS = 60
 hor_angle = (0)/180*np.pi
 vert_angle = (0)/180*np.pi
 
-visual_field = 20/180*np.pi
+visual_field = 120/180*np.pi
 
 while not finished:
     clock.tick(FPS)
@@ -45,16 +47,16 @@ while not finished:
             pass
         elif event.type == pygame.KEYDOWN:
             if event.key == 119:
-                vert_angle -= 2/180*np.pi
+                vert_angle -= 4/180*np.pi
                 print("вертикальный угол ", vert_angle/np.pi*180)
             elif event.key == 115:
-                vert_angle += 2/180*np.pi
+                vert_angle += 4/180*np.pi
                 print("вертикальный угол ", vert_angle/np.pi*180)
             elif event.key == 100:
-                hor_angle += 2/180*np.pi
+                hor_angle += 4/180*np.pi
                 print("горизонтальный угол ", hor_angle/np.pi*180)
             elif event.key == 97:
-                hor_angle -= 2/180*np.pi
+                hor_angle -= 4/180*np.pi
                 print("горизонтальный угол ", hor_angle/np.pi*180)
             elif event.key == 113:
                 visual_field *= 1.3
@@ -68,10 +70,11 @@ while not finished:
             pass
 
     visible_stars = data.what_we_see(hor_angle, vert_angle, visual_field)
-
     for star in visible_stars:
         graphics.draw_star(conv_to_screen(
             star.phi, star.theta, visual_field), star.brightness)
+
+
 
     graphics.update()
 
