@@ -41,33 +41,24 @@ while not finished:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             finished = True
-        elif event.type == pygame.MOUSEBUTTONDOWN:
-            pass
-        elif event.type == pygame.MOUSEBUTTONUP:
-            pass
-        elif event.type == pygame.KEYDOWN:
-            if event.key == 119:
-                vert_angle -= 4/180*np.pi
-                print("вертикальный угол ", vert_angle/np.pi*180)
-            elif event.key == 115:
-                vert_angle += 4/180*np.pi
-                print("вертикальный угол ", vert_angle/np.pi*180)
-            elif event.key == 100:
-                hor_angle += 4/180*np.pi
-                print("горизонтальный угол ", hor_angle/np.pi*180)
-            elif event.key == 97:
-                hor_angle -= 4/180*np.pi
-                print("горизонтальный угол ", hor_angle/np.pi*180)
-            elif event.key == 113:
-                visual_field *= 1.3
-                print("угол обзора ", visual_field/np.pi*180)
-            elif event.key == 101:
-                visual_field /= 1.3
-                print("угол обзора ", visual_field/np.pi*180)
-        elif event.type == pygame.KEYUP:
-            pass
-        elif event.type == pygame.MOUSEMOTION:
-            pass
+    keys = pygame.key.get_pressed() #checking pressed keys
+    if keys[pygame.K_UP]:
+        vert_angle += 0.15/180*np.pi
+    if keys[pygame.K_DOWN]:
+        vert_angle -= 0.15/180*np.pi
+    if keys[pygame.K_LEFT]:
+        hor_angle += 0.15/180*np.pi
+    if keys[pygame.K_RIGHT]:
+        hor_angle -= 0.15/180*np.pi
+
+
+    if keys[pygame.K_MINUS]:
+        visual_field *=1.05
+
+    if keys[pygame.K_0 ]:
+        visual_field /=1.05
+
+    
 
     visible_stars = data.what_we_see(hor_angle, vert_angle, visual_field)
     for star in visible_stars:
