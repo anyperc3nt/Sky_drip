@@ -22,16 +22,18 @@ def init():
     global layer_black
     layer_black = pygame.Surface((Xscreensize,Yscreensize))
     layer_black = layer_black.convert_alpha()
-    layer_black.fill((0,0,0,80))
+    layer_black.fill((0,0,0,40))
 
 
 def draw_star(coords, brightness):
     """отрисовывает звезду заданной яркости в точке x, y экрана"""
 
+    brightness = int(brightness)
+
     x = coords[0]
     y = coords[1]
 
-    circle(layer_curr, (250, 250, 250), (x, y), 1)
+    circle(layer_curr, (brightness, brightness, brightness), (x, y), 1)
 
 
 def update():
