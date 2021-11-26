@@ -14,8 +14,8 @@ from settings import *
 def conv_to_screen(phi, tetta, visual_field):
     """конвертирует угловые координаты звезды в координаты на экране"""
 
-    x = math.sin(phi)*Xscreensize/math.sin(visual_field/2)
-    y = math.sin(tetta)*Yscreensize/math.sin(visual_field/2)
+    x = (math.sin(phi)/math.sin(visual_field/2)+1)/2*Xscreensize
+    y = (math.sin(tetta)/math.sin(visual_field/2)+1)/2*Yscreensize
 
     return int(x), int(y)
 
@@ -53,10 +53,12 @@ while not finished:
 
 
     if keys[pygame.K_MINUS]:
-        visual_field *=1.05
+        if(visual_field<np.pi*0.9):
+            visual_field *=1.01
+            print(visual_field)
 
     if keys[pygame.K_0 ]:
-        visual_field /=1.05
+        visual_field /=1.01
 
     
 

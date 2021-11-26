@@ -1,4 +1,4 @@
 
 """настройки экрана"""
-Xscreensize = 700
-Yscreensize = 700
+Xscreensize = 1280
+Yscreensize = 720
