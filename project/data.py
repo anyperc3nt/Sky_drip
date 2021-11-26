@@ -59,12 +59,12 @@ def what_we_see(hor_angle, vert_angle, visual_field):
     visible_stars = []
 
     for a_star in stars:
-        if abs(a_star.phi - hor_angle) % np.pi <= visual_field / 2 and abs(a_star.theta - vert_angle) % np.pi <= visual_field / 2:
+        if abs(a_star.phi - hor_angle) % (2*np.pi) <= visual_field / 2 and abs(a_star.theta - vert_angle) % (2*np.pi) <= visual_field / 2:
             visible_star = Star(a_star.phi, a_star.theta, a_star.brightness)
             visible_star.phi -= hor_angle
             visible_star.theta -= vert_angle
-            visible_star.phi %= np.pi
-            visible_star.theta %= np.pi
+            visible_star.phi %= (2*np.pi)
+            visible_star.theta %= (2*np.pi)
 
             visible_stars.append(visible_star)
 
