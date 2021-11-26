@@ -56,7 +56,8 @@ while not finished:
         visual_field *=1.05
 
     if keys[pygame.K_0 ]:
-        visual_field /=1.05
+        visual_field = min(visual_field * 1.05, np.pi)
+
 
     
 
