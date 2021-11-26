@@ -13,7 +13,7 @@ class Star:
 
 def coord2angles(x, y, z):
     phi = np.arctan2(z, x)  # horizontal
-    theta = np.arctan2(y, np.sqrt(x**2+z**2))  # vertical
+    theta = np.arctan2(y, np.sqrt(x**2+z**2))  # vertical (declination)
     return phi, theta
 
 
@@ -33,9 +33,17 @@ def init():
     mag = data_frame['mag'].values
     hundreds = np.array([100 for i in range(num_stars)])
     brightness = np.power(hundreds, mag / 5)
+    not_null_sum = 0
+    not_null_counter = 0
+    for i in range(len(mag)):
+        if mag[i] > 6.5:
+            brightness[i] = 0
+        else:
+            not_null_sum += brightness[i]
+            not_null_counter += 1
 
     #brightness = brightness * 255.0/(np.max(brightness) - np.min(brightness))
-    scale = 255.0/np.mean(brightness)
+    scale = 255.0*not_null_counter/not_null_sum
     brightness = [min(255, i*scale) for i in brightness]
 
     stars = []
