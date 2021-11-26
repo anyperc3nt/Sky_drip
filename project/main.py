@@ -2,6 +2,8 @@ import numpy as np
 import pygame
 import math
 
+
+
 from pygame.version import ver
 
 import data
@@ -32,7 +34,7 @@ FPS = 60
 hor_angle = (0)/180*np.pi
 vert_angle = (0)/180*np.pi
 
-visual_field = 20/180*np.pi
+visual_field = 120/180*np.pi
 
 while not finished:
     clock.tick(FPS)
@@ -68,10 +70,11 @@ while not finished:
             pass
 
     visible_stars = data.what_we_see(hor_angle, vert_angle, visual_field)
-
     for star in visible_stars:
         graphics.draw_star(conv_to_screen(
             star.phi, star.theta, visual_field), star.brightness)
+
+
 
     graphics.update()
 
