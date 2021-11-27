@@ -2,8 +2,6 @@ import numpy as np
 import pygame
 import math
 
-
-
 from pygame.version import ver
 
 import data
@@ -11,20 +9,22 @@ import graphics
 from settings import *
 
 
-def conv_to_screen(phi, tetta, visual_field):
-    """конвертирует угловые координаты звезды в координаты на экране"""
+def conv_to_screen(phi, theta):
+    """конвертирует угловые координаты звезды в координаты на экране
+
+    phi, theta - углы по горизонтали и вертикали соответственно,
+    должны лежать в диапозоне от -visual_field/2 до visual_field/2
+    """
 
     x = (math.sin(phi)/math.sin(visual_field/2)+1)/2*Xscreensize
-    y = (math.sin(tetta)/math.sin(visual_field/2)+1)/2*Yscreensize
+    y = (math.sin(theta)/math.sin(visual_field/2)+1)/2*Yscreensize
 
     return int(x), int(y)
 
 
 pygame.init()
 data.init()
-print("data initialisation complete")
 graphics.init()
-print("graphics initialisation complete")
 
 clock = pygame.time.Clock()
 finished = False
@@ -41,7 +41,8 @@ while not finished:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             finished = True
-    keys = pygame.key.get_pressed() #checking pressed keys
+
+    keys = pygame.key.get_pressed()  # checking pressed keys
     if keys[pygame.K_UP]:
         vert_angle += 0.15/180*np.pi
     if keys[pygame.K_DOWN]:
@@ -50,24 +51,19 @@ while not finished:
         hor_angle += 0.15/180*np.pi
     if keys[pygame.K_RIGHT]:
         hor_angle -= 0.15/180*np.pi
-
-
     if keys[pygame.K_MINUS]:
-        if(visual_field<np.pi*0.9):
-            visual_field *=1.01
+        # проверка, чтобы область обзора была не больше 180
+        if(visual_field < np.pi*0.9):
+            visual_field *= 1.01
             print(visual_field)
-
-    if keys[pygame.K_0 ]:
-        visual_field /=1.01
-
-    
+    if keys[pygame.K_0]:
+        visual_field /= 1.01
 
     visible_stars = data.what_we_see(hor_angle, vert_angle, visual_field)
+
     for star in visible_stars:
         graphics.draw_star(conv_to_screen(
-            star.phi, star.theta, visual_field), star.brightness)
-
-
+            star.phi, star.theta), star.brightness)
 
     graphics.update()
 
