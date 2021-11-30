@@ -24,8 +24,16 @@ def init():
     инициализирует дисплей в пайгейме
     создает необходимые для отрисовки объектов и эффектов слои
     """
+
+    global Xscreensize
+    Xscreensize = int(pygame.display.Info().current_w)
+    global Yscreensize
+    Yscreensize = int(pygame.display.Info().current_h)
+    print(Xscreensize)
+
     global screen
-    screen = pygame.display.set_mode((Xscreensize, Yscreensize))
+    #screen = pygame.display.set_mode((Xscreensize, Yscreensize))
+    screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
     pygame.display.update()
 
     global layer_curr
