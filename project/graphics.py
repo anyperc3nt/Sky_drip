@@ -26,14 +26,14 @@ def init():
     """
 
     global Xscreensize
-    Xscreensize = int(pygame.display.Info().current_w*0.9)
+    Xscreensize = int(pygame.display.Info().current_w)
     global Yscreensize
-    Yscreensize = int(pygame.display.Info().current_h*0.9)
+    Yscreensize = int(pygame.display.Info().current_h)
     print(Xscreensize)
 
     global screen
-    screen = pygame.display.set_mode((Xscreensize, Yscreensize))
-    #screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
+    #screen = pygame.display.set_mode((Xscreensize, Yscreensize))
+    screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
     pygame.display.update()
 
     global layer_curr
