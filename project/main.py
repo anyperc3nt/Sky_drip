@@ -28,6 +28,7 @@ graphics.init()
 
 clock = pygame.time.Clock()
 finished = False
+moving = False
 
 FPS = 60
 
@@ -41,24 +42,30 @@ while not finished:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             finished = True
-
-    keys = pygame.key.get_pressed()  # checking pressed keys
-    if keys[pygame.K_UP]:
-        vert_angle += 0.15/180*np.pi
-    if keys[pygame.K_DOWN]:
-        vert_angle -= 0.15/180*np.pi
-    if keys[pygame.K_LEFT]:
-        hor_angle += 0.15/180*np.pi
-    if keys[pygame.K_RIGHT]:
-        hor_angle -= 0.15/180*np.pi
-    if keys[pygame.K_MINUS]:
-        # проверка, чтобы область обзора была не больше 180
-        if(visual_field < np.pi*0.9):
-            visual_field *= 1.01
-            print(visual_field)
-    if keys[pygame.K_0]:
-        visual_field /= 1.01
-
+        if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+            moving = True
+        if event.type == pygame.MOUSEMOTION:
+                if moving:
+                    if event.rel[0]<0:
+                        hor_angle += 0.15/180*np.pi
+                    elif event.rel[0]>0:
+                        hor_angle -= 0.15/180*np.pi
+                    elif event.rel[1]<0:
+                        vert_angle += 0.15/180*np.pi
+                    elif event.rel[1]>0:
+                        vert_angle -= 0.15/180*np.pi
+        if event.type == pygame.MOUSEBUTTONUP and event.button == 1:
+                moving = False
+        keys = pygame.key.get_pressed()
+        if keys[pygame.K_ESCAPE]:
+             finished = True          
+        if event.type == pygame.MOUSEBUTTONDOWN:
+           if event.button == 4:
+              if(visual_field < np.pi*0.9):
+                 visual_field *= 1.01
+           if event.button == 5:
+               visual_field /= 1.01
+               
     visible_stars = data.what_we_see(hor_angle, vert_angle, visual_field)
 
     for star in visible_stars:
