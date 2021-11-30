@@ -1,6 +1,6 @@
 """настройки экрана"""
-Xscreensize = 1280
-Yscreensize = 720
+#Xscreensize = 1280
+#Yscreensize = 720
 
 """настройки размытия в движении"""
 motionblur_brightness = 200

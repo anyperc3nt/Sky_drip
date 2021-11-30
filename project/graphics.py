@@ -3,9 +3,8 @@ from pygame.draw import *
 
 from settings import *
 
-"""модуль графики
-
-в качестве основных штук, с которыми он работает, имеет screen, 3 слоя для эффектов,
+"""
+в качестве основных штук, с которыми этот модуль работает, имеет screen, 3 слоя для эффектов,
 и один вспомогательный слой
 
 layer_curr - слой, на котором отображается текущее расположение звезд на карте
@@ -23,10 +22,18 @@ def init():
     """функция инициализации модуля
 
     инициализирует дисплей в пайгейме
-    создает необходимые для отрисовки объектов и эффектов слои (в виде серфейсов)
+    создает необходимые для отрисовки объектов и эффектов слои
     """
+
+    global Xscreensize
+    Xscreensize = int(pygame.display.Info().current_w*0.9)
+    global Yscreensize
+    Yscreensize = int(pygame.display.Info().current_h*0.9)
+    print(Xscreensize)
+
     global screen
     screen = pygame.display.set_mode((Xscreensize, Yscreensize))
+    #screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
     pygame.display.update()
 
     global layer_curr
@@ -72,7 +79,7 @@ def draw_star(coords, brightness):
 def update():
     """функция отображения нарисованной картинки на экран
 
-    так же отображает эффекты, такие как размытие звезд в движении, свечение звезд
+    так же отображает и обрабатывает эффекты, такие как размытие звезд в движении, свечение звезд
     """
     global layer_curr
     global layer_motionblur

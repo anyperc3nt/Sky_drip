@@ -16,8 +16,8 @@ def conv_to_screen(phi, theta):
     должны лежать в диапозоне от -visual_field/2 до visual_field/2
     """
 
-    x = (math.sin(phi)/math.sin(visual_field/2)+1)/2*Xscreensize
-    y = (math.sin(theta)/math.sin(visual_field/2)+1)/2*Yscreensize
+    x = (math.sin(phi)/math.sin(visual_field/2)+1)/2*graphics.Xscreensize
+    y = (math.sin(theta)/math.sin(visual_field/2)+1)/2*graphics.Yscreensize
 
     return int(x), int(y)
 
