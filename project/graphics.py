@@ -3,6 +3,9 @@ from pygame.draw import *
 
 from settings import *
 
+
+import pygame.freetype
+
 """
 в качестве основных штук, с которыми этот модуль работает, имеет screen, 3 слоя для эффектов,
 и один вспомогательный слой
@@ -24,6 +27,15 @@ def init():
     инициализирует дисплей в пайгейме
     создает необходимые для отрисовки объектов и эффектов слои
     """
+
+    pygame.font.init()
+    global myfont
+    myfont = pygame.font.SysFont('Comic Sans MS', 30)
+
+
+
+
+
 
     global Xscreensize
     Xscreensize = int(pygame.display.Info().current_w)
@@ -60,23 +72,34 @@ def init():
     layer_black.fill((0, 0, 0, 255-motionblur_force))
 
 
-def draw_star(coords, brightness):
+def draw_star(coords, name, brightness, visual_field, x_mouse, y_mouse):
     """отрисовывает звезду заданной яркости в точке x, y экрана
 
     coords - пара чисел (x,y)
     brightness - яркость от 0 до 255
     """
 
+
+    eps = 4
+
+
     brightness = int(brightness)
 
     x = coords[0]
     y = coords[1]
 
-    circle(layer_curr, (brightness, brightness, brightness), (x, y), 1)
-    circle(layer_glow, (brightness, brightness, brightness), (x, y), glow_size)
+    scale = 120/180*3.14/visual_field
 
 
-def update():
+    circle(layer_curr, (brightness, brightness, brightness), (x, y), scale)
+    circle(layer_glow, (brightness, brightness, brightness), (x, y), scale*glow_size)
+    if (x - x_mouse)**2 + (y-y_mouse)**2 < eps**2:
+        return True
+    else:
+        return False
+
+
+def update(x, y, name):
     """функция отображения нарисованной картинки на экран
 
     так же отображает и обрабатывает эффекты, такие как размытие звезд в движении, свечение звезд
@@ -84,6 +107,8 @@ def update():
     global layer_curr
     global layer_motionblur
     global layer_glow
+
+    textsurface = myfont.render(name, False, 'White')
 
     # тик обработки слоя размытия в движении
     pygame.Surface.blit(layer_motionblur, layer_black, (0, 0))
@@ -101,8 +126,16 @@ def update():
     pygame.Surface.blit(screen, layer_motionblur, (0, 0))
     pygame.Surface.blit(screen, layer_glow, (0, 0))
 
+    textsurface1 = myfont.render(str(x)+" "+str(y), False, 'White')
+
+    screen.blit(textsurface1, (0, 0))
+    screen.blit(textsurface, (x, y))
+
+
     pygame.display.update()
 
     # стирание слоев перед след кадром
     layer_curr.fill((0, 0, 0, 0))
     layer_glow.fill((0, 0, 0, 0))
+
+    #textsurface = myfont.render("", False, 'White')
