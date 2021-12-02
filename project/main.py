@@ -1,6 +1,7 @@
 import numpy as np
 import pygame
 import math
+from pygame.constants import K_ESCAPE
 
 from pygame.version import ver
 
@@ -39,46 +40,38 @@ visual_field = 120/180*np.pi
 while not finished:
     clock.tick(FPS)
     for event in pygame.event.get():
+
+        if event.type == pygame.KEYDOWN:
+            if event.key == K_ESCAPE:
+                finished = True 
+
         if event.type == pygame.QUIT:
             finished = True
+
         if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
             moving = True
-        if event.type == pygame.MOUSEMOTION:
-                if moving:
-                    if event.rel[0]<0:
-                        hor_angle += 0.15/180*np.pi
-                    elif event.rel[0]>0:
-                        hor_angle -= 0.15/180*np.pi
-                    elif event.rel[1]<0:
-                        vert_angle += 0.15/180*np.pi
-                    elif event.rel[1]>0:
-                        vert_angle -= 0.15/180*np.pi
+        
         if event.type == pygame.MOUSEBUTTONUP and event.button == 1:
                 moving = False
-        keys = pygame.key.get_pressed()
-        if keys[pygame.K_ESCAPE]:
-             finished = True          
+
+        if event.type == pygame.MOUSEMOTION:
+            if moving:
+                dx, dy = event.rel
+                hor_angle -= visual_field*dx/graphics.Xscreensize
+                vert_angle -= visual_field*dy/graphics.Yscreensize
+                
         if event.type == pygame.MOUSEBUTTONDOWN:
-           if event.button == 4:
-              if(visual_field < np.pi*0.9):
-                 visual_field *= 1.01
-           if event.button == 5:
-               visual_field /= 1.01
+            if event.button == 4:
+                visual_field /= 1.09
+            if event.button == 5:
+                if(visual_field < np.pi*0.9):
+                    visual_field *= 1.09
                
     visible_stars = data.what_we_see(hor_angle, vert_angle, visual_field)
-    x, y = pygame.mouse.get_pos()
-    x_text, y_text = (0, 0)
-    name = ''
+
     for star in visible_stars:
-        if graphics.draw_star(conv_to_screen(
-                star.phi, star.theta), star.name, star.brightness, visual_field, x, y):
-            if star.name != star.name:  # isnan
-                name = 'id:'+str(star.id)
-            else:
-                name = star.name
-            x_text, y_text = conv_to_screen(star.phi, star.theta)
+        graphics.draw_star(conv_to_screen(star.phi, star.theta), star.name, star.id, star.brightness, visual_field)
 
-
-    graphics.update(x_text, y_text, name)
+    graphics.update()
 
 pygame.quit()

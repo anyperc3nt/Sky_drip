@@ -1,14 +1,10 @@
 import pygame
 from pygame.draw import *
-
 from settings import *
-
-
 import pygame.freetype
 
 """
-в качестве основных штук, с которыми этот модуль работает, имеет screen, 3 слоя для эффектов,
-и один вспомогательный слой
+в качестве основных штук, с которыми этот модуль работает, имеет screen, 3 слоя для эффектов
 
 layer_curr - слой, на котором отображается текущее расположение звезд на карте
 
@@ -16,7 +12,7 @@ layer_glow - слой, на котором отображаются увелич
 и придания эффекта свечения
 
 layer_motionblur - слой, на котором запоминаются все предыдущие расположения звезд, причем яркость
-изображения на этом слое уменьшается каждый кадр путем наложения вспомогательного слоая layer_black,
+изображения на этом слое уменьшается каждый кадр путем наложения вспомогательного слоя layer_black,
 что придает эффект плавного затухания
 """
 
@@ -27,12 +23,9 @@ def init():
     инициализирует дисплей в пайгейме
     создает необходимые для отрисовки объектов и эффектов слои
     """
-
     pygame.font.init()
-    global myfont
-    myfont = pygame.font.SysFont('Comic Sans MS', 30)
-
-
+    #global myfont
+    #myfont = pygame.freetype.SysFont('Comic Sans MS', 10)
     global Xscreensize
     Xscreensize = int(pygame.display.Info().current_w)
     global Yscreensize
@@ -48,6 +41,11 @@ def init():
     layer_curr = pygame.Surface((Xscreensize, Yscreensize))
     layer_curr = layer_curr.convert_alpha()
     layer_curr.fill((0, 0, 0, 0))
+
+    global layer_text
+    layer_text = pygame.Surface((Xscreensize, Yscreensize))
+    layer_text = layer_text.convert_alpha()
+    layer_text.fill((0, 0, 0, 0))
 
     global layer_glow
     layer_glow = pygame.Surface((Xscreensize, Yscreensize))
@@ -68,59 +66,78 @@ def init():
     layer_black.fill((0, 0, 0, 255-motionblur_force))
 
 
-def draw_star(coords, name, brightness, visual_field, x_mouse, y_mouse):
+def draw_star(coords, name, id, brightness, visual_field):
     """отрисовывает звезду заданной яркости в точке x, y экрана
 
     coords - пара чисел (x,y)
     brightness - яркость от 0 до 255
     """
-    eps = 4
 
     brightness = int(brightness)
 
-    x = coords[0]
-    y = coords[1]
+    x, y = coords
 
     scale = 120/180*3.14/visual_field
+    scale*=5*brightness/255+1
+    if scale < 1:
+        scale = 1
 
-    circle(layer_curr, (brightness, brightness, brightness), (x, y), scale)
-    circle(layer_glow, (brightness, brightness, brightness), (x, y), scale*glow_size)
-    if (x - x_mouse)**2 + (y-y_mouse)**2 < eps**2:
-        return True
+    if brightness > 155:
+        lightness = 255
     else:
-        return False
+        lightness=brightness + 100
+
+    circle(layer_curr, (lightness, lightness, lightness), (x, y), int(scale))
+    #рисуем увеличенную версию звезды на слой glow
+    if glow_on:
+        circle(layer_glow, (lightness, lightness, lightness), (x, y), int(scale*glow_size))
+    if text_on:
+        if name == name:  # not nan
+            myfont = pygame.freetype.SysFont('Comic Sans MS', int(scale*4))
+            myfont.render_to(layer_text, coords, name, (255, 255, 255))
 
 
-def update(x, y, name):
-    """функция отображения нарисованной картинки на экран
-
-    так же отображает и обрабатывает эффекты, такие как размытие звезд в движении, свечение звезд
-    """
-    global layer_curr
-    global layer_motionblur
+def glow_update():
     global layer_glow
-
-    textsurface = myfont.render(name, False, 'White')
-
-    # тик обработки слоя размытия в движении
-    pygame.Surface.blit(layer_motionblur, layer_black, (0, 0))
-    pygame.Surface.blit(layer_motionblur, layer_curr, (0, 0))
-
-    # тик обработки размытия звезд
-    layer_glow = pygame.transform.smoothscale(
-        layer_glow, (int(Xscreensize/glow_blur), int(Yscreensize/glow_blur)))
-    layer_glow = pygame.transform.smoothscale(
-        layer_glow, (Xscreensize, Yscreensize))
-
-    # отрисовка слоев на экран
-    screen.fill((0, 0, 0))
-    pygame.Surface.blit(screen, layer_curr, (0, 0))
-    pygame.Surface.blit(screen, layer_motionblur, (0, 0))
+    layer_glow = pygame.transform.smoothscale(layer_glow, (int(Xscreensize/glow_blur), int(Yscreensize/glow_blur)))
+    layer_glow = pygame.transform.smoothscale(layer_glow, (Xscreensize, Yscreensize))
     pygame.Surface.blit(screen, layer_glow, (0, 0))
-    screen.blit(textsurface, (x, y))
-    pygame.display.update()
-
-    # стирание слоев перед след кадром
-    layer_curr.fill((0, 0, 0, 0))
     layer_glow.fill((0, 0, 0, 0))
 
+
+def motionblur_update():
+    global layer_motionblur
+    pygame.Surface.blit(layer_motionblur, layer_black, (0, 0))
+    pygame.Surface.blit(layer_motionblur, layer_curr, (0, 0))
+    pygame.Surface.blit(screen, layer_motionblur, (0, 0))
+
+
+def stars_update():
+    global layer_curr
+    pygame.Surface.blit(screen, layer_curr, (0, 0))
+    layer_curr.fill((0, 0, 0, 0))
+
+
+def text_update():
+    global layer_text
+    pygame.Surface.blit(screen, layer_text, (0, 0))
+
+    layer_text.fill((0, 0, 0, 0))
+
+
+def update():
+    """функция отрисовки нарисованного кадра на экран"""
+    screen.fill((0, 0, 0))
+
+    if motionblur_on:
+        motionblur_update()
+
+    if glow_on:
+        glow_update()
+
+    stars_update()
+
+    if text_on:
+        text_update()
+    
+    pygame.display.update()

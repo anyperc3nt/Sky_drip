@@ -1,4 +1,5 @@
 import numpy as np
+from numpy.lib.index_tricks import s_
 import pandas as pd
 from collections import namedtuple
 
@@ -10,6 +11,8 @@ from settings import *
   #      self.phi = phi
   #      self.theta = theta
    #     self.brightness = brightness
+
+Star = namedtuple('Star', ['phi', 'theta', 'brightness', 'name', 'id'])
 
 
 def coord2angles(x, y, z):
@@ -35,44 +38,26 @@ def init():
     phi = phi.tolist()
     theta = theta.tolist()
     mag = data_frame['mag'].values
-    hundreds = np.array([100 for i in range(num_stars)])
-    brightness = np.power(hundreds, mag / 5).tolist()
     mag = mag.tolist()
-    not_null_sum = 0
-    not_null_counter = 0
-    #for i in range(len(mag)):
-     #   if mag[i] > 6.5:
-      #      brightness[i] = 0
-       # else:
-        #    not_null_sum += brightness[i]
-         #   not_null_counter += 1
-    i = 0
-    while i < len(mag):
-        if mag[i] > 6.5:
-            #print(i, len(brightness), len(phi), len(theta))
-            del brightness[i]
-            del mag[i]
-            del phi[i]
-            del theta[i]
-            del names[i]
-        else:
-            i += 1
-    #brightness = brightness * 255.0/(np.max(brightness) - np.min(brightness))
-    scale = 255.0/np.mean(brightness)
-    brightness = [min(255, i*scale) for i in brightness]
-
-    num_stars = len(brightness)
-
-    global Star
-    Star = namedtuple('Star', ['phi', 'theta', 'brightness', 'name', 'id'])
 
     stars = []
 
+    #самая яркая звезда сириус, у нее магнитуда -1,67
+    #по этому мы берем -mag от -6,5 до 1,67
+    #а еще я не беру звезды ярче сириуса, потому что в датасете походу есть солнце и другие слишком яркие объекты
+
     for i in range(num_stars):
-        stars.append(Star(phi[i], theta[i], brightness[i], names[i], ids[i]))
+        if((-mag[i]) > -6.5) and (-mag[i] < 1.68):
+            s_brightness = (6.5 - mag[i])/(1.68+6.5)*255
+            stars.append(Star(phi[i], theta[i], s_brightness, names[i], ids[i]))
 
 
 def what_we_see(hor_angle, vert_angle, visual_field):
+    """возвращает относительные угловые координаты звезд, находящихся в угловом диапозоне видимости
+    
+    hor_angle, vert_angle - углы направления зрения пользователя в радианах
+    visual_field - угол обзора пользователя
+    """
     global stars
 
     visible_stars = []
@@ -80,7 +65,6 @@ def what_we_see(hor_angle, vert_angle, visual_field):
     for a_star in stars:
         if abs(a_star.phi - hor_angle) % (2*np.pi) <= visual_field / 2 and abs(a_star.theta - vert_angle) % (2*np.pi) <= visual_field / 2:
             visible_star = Star((a_star.phi - hor_angle) % (2*np.pi), (a_star.theta - vert_angle) % (2*np.pi), a_star.brightness, a_star.name, a_star.id)
-
 
             visible_stars.append(visible_star)
 
