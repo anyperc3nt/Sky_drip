@@ -33,10 +33,6 @@ def init():
     myfont = pygame.font.SysFont('Comic Sans MS', 30)
 
 
-
-
-
-
     global Xscreensize
     Xscreensize = int(pygame.display.Info().current_w)
     global Yscreensize
@@ -78,10 +74,7 @@ def draw_star(coords, name, brightness, visual_field, x_mouse, y_mouse):
     coords - пара чисел (x,y)
     brightness - яркость от 0 до 255
     """
-
-
     eps = 4
-
 
     brightness = int(brightness)
 
@@ -89,7 +82,6 @@ def draw_star(coords, name, brightness, visual_field, x_mouse, y_mouse):
     y = coords[1]
 
     scale = 120/180*3.14/visual_field
-
 
     circle(layer_curr, (brightness, brightness, brightness), (x, y), scale)
     circle(layer_glow, (brightness, brightness, brightness), (x, y), scale*glow_size)
@@ -125,17 +117,10 @@ def update(x, y, name):
     pygame.Surface.blit(screen, layer_curr, (0, 0))
     pygame.Surface.blit(screen, layer_motionblur, (0, 0))
     pygame.Surface.blit(screen, layer_glow, (0, 0))
-
-    textsurface1 = myfont.render(str(x)+" "+str(y), False, 'White')
-
-    screen.blit(textsurface1, (0, 0))
     screen.blit(textsurface, (x, y))
-
-
     pygame.display.update()
 
     # стирание слоев перед след кадром
     layer_curr.fill((0, 0, 0, 0))
     layer_glow.fill((0, 0, 0, 0))
 
-    #textsurface = myfont.render("", False, 'White')

@@ -71,11 +71,12 @@ while not finished:
     name = ''
     for star in visible_stars:
         if graphics.draw_star(conv_to_screen(
-                star.phi, star.theta),"NAME", star.brightness, visual_field, x, y):
-
+                star.phi, star.theta), star.name, star.brightness, visual_field, x, y):
+            if star.name != star.name:  # isnan
+                name = 'id:'+str(star.id)
+            else:
+                name = star.name
             x_text, y_text = conv_to_screen(star.phi, star.theta)
-            #name = star.name
-            name = 'TEXT'
 
 
     graphics.update(x_text, y_text, name)
