@@ -1,14 +1,15 @@
 import numpy as np
 import pandas as pd
+from collections import namedtuple
 
 from settings import *
 
 
-class Star:
-    def __init__(self, phi, theta, brightness):
-        self.phi = phi
-        self.theta = theta
-        self.brightness = brightness
+#class Star:
+ #   def __init__(self, phi, theta, brightness):
+  #      self.phi = phi
+  #      self.theta = theta
+   #     self.brightness = brightness
 
 
 def coord2angles(x, y, z):
@@ -22,13 +23,14 @@ def init():
 
     global stars
 
-    #data_frame = pd.read_csv(r"D:\ucheba\python\Sky_drip\project\hygdata_v3.csv")
     data_frame = pd.read_csv(__file__[:-7]+'hygdata_v3.csv')
 
     num_stars = len(data_frame)
     x = data_frame['x'].values
     y = data_frame['y'].values
     z = data_frame['z'].values
+    names = data_frame['proper'].values.tolist()
+    ids = data_frame['id'].values.tolist()
     phi, theta = coord2angles(x, y, z)
     phi = phi.tolist()
     theta = theta.tolist()
@@ -52,6 +54,7 @@ def init():
             del mag[i]
             del phi[i]
             del theta[i]
+            del names[i]
         else:
             i += 1
     #brightness = brightness * 255.0/(np.max(brightness) - np.min(brightness))
@@ -60,10 +63,13 @@ def init():
 
     num_stars = len(brightness)
 
+    global Star
+    Star = namedtuple('Star', ['phi', 'theta', 'brightness', 'name', 'id'])
+
     stars = []
 
     for i in range(num_stars):
-        stars.append(Star(phi[i], theta[i], brightness[i]))
+        stars.append(Star(phi[i], theta[i], brightness[i], names[i], ids[i]))
 
 
 def what_we_see(hor_angle, vert_angle, visual_field):
@@ -73,11 +79,8 @@ def what_we_see(hor_angle, vert_angle, visual_field):
 
     for a_star in stars:
         if abs(a_star.phi - hor_angle) % (2*np.pi) <= visual_field / 2 and abs(a_star.theta - vert_angle) % (2*np.pi) <= visual_field / 2:
-            visible_star = Star(a_star.phi, a_star.theta, a_star.brightness)
-            visible_star.phi -= hor_angle
-            visible_star.theta -= vert_angle
-            visible_star.phi %= (2*np.pi)
-            visible_star.theta %= (2*np.pi)
+            visible_star = Star((a_star.phi - hor_angle) % (2*np.pi), (a_star.theta - vert_angle) % (2*np.pi), a_star.brightness, a_star.name, a_star.id)
+
 
             visible_stars.append(visible_star)
 

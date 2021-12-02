@@ -8,7 +8,6 @@ import data
 import graphics
 from settings import *
 
-
 def conv_to_screen(phi, theta):
     """конвертирует угловые координаты звезды в координаты на экране
 
@@ -67,11 +66,19 @@ while not finished:
                visual_field /= 1.01
                
     visible_stars = data.what_we_see(hor_angle, vert_angle, visual_field)
-
+    x, y = pygame.mouse.get_pos()
+    x_text, y_text = (0, 0)
+    name = ''
     for star in visible_stars:
-        graphics.draw_star(conv_to_screen(
-            star.phi, star.theta), star.brightness)
+        if graphics.draw_star(conv_to_screen(
+                star.phi, star.theta), star.name, star.brightness, visual_field, x, y):
+            if star.name != star.name:  # isnan
+                name = 'id:'+str(star.id)
+            else:
+                name = star.name
+            x_text, y_text = conv_to_screen(star.phi, star.theta)
 
-    graphics.update()
+
+    graphics.update(x_text, y_text, name)
 
 pygame.quit()
