@@ -41,31 +41,27 @@ while not finished:
     clock.tick(FPS)
     for event in pygame.event.get():
 
-        if event.type == pygame.KEYDOWN:
-            if event.key == K_ESCAPE:
-                finished = True 
+        if event.type == pygame.KEYDOWN and event.key == K_ESCAPE or event.type == pygame.QUIT:
+             finished = True 
 
-        if event.type == pygame.QUIT:
-            finished = True
-
-        if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
-            moving = True
+        elif event.type == pygame.MOUSEBUTTONDOWN:
+            if event.button == 1:
+               moving = True
+            elif event.button == 4:
+                visual_field /= 1.09
+            elif event.button == 5:
+                if(visual_field < np.pi*0.9):
+                    visual_field *= 1.09
         
-        if event.type == pygame.MOUSEBUTTONUP and event.button == 1:
+        elif event.type == pygame.MOUSEBUTTONUP and event.button == 1:
                 moving = False
 
-        if event.type == pygame.MOUSEMOTION:
+        elif event.type == pygame.MOUSEMOTION:
             if moving:
                 dx, dy = event.rel
                 hor_angle -= visual_field*dx/graphics.Xscreensize
                 vert_angle -= visual_field*dy/graphics.Yscreensize
-                
-        if event.type == pygame.MOUSEBUTTONDOWN:
-            if event.button == 4:
-                visual_field /= 1.09
-            if event.button == 5:
-                if(visual_field < np.pi*0.9):
-                    visual_field *= 1.09
+        
                
     visible_stars = data.what_we_see(hor_angle, vert_angle, visual_field)
 
