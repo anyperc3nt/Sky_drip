@@ -16,8 +16,8 @@ def conv_to_screen(phi, theta):
     должны лежать в диапозоне от -visual_field/2 до visual_field/2
     """
 
-    x = (math.sin(phi)/math.sin(visual_field/2)+1)/2*graphics.Xscreensize
-    y = (math.sin(theta)/math.sin(visual_field/2)+1)/2*graphics.Yscreensize
+    x = (math.tan(phi)/math.tan(visual_field/2)+1)/2*graphics.Xscreensize
+    y = (math.tan(theta)/math.tan(visual_field/2)+1)/2*graphics.Yscreensize
 
     return int(x), int(y)
 
@@ -35,7 +35,7 @@ FPS = 60
 hor_angle = (0)/180*np.pi
 vert_angle = (0)/180*np.pi
 
-visual_field = 120/180*np.pi
+visual_field = 90/180*np.pi
 
 while not finished:
     clock.tick(FPS)
