@@ -6,7 +6,7 @@
 """настройки графики
 тут можно включать/выключать эффекты
 """
-motionblur_on = False
+motionblur_on = True
 glow_on = True
 text_on = True
 
@@ -18,3 +18,7 @@ motionblur_force = 215
 glow_size = 10
 glow_blur = 25
 glow_brightness = 40
+
+
+"""настройка времени"""
+time_speed = 1000
