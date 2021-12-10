@@ -36,6 +36,7 @@ hor_angle = (0)/180*np.pi
 vert_angle = (0)/180*np.pi
 
 visual_field = 90/180*np.pi
+Time = 0
 
 while not finished:
     clock.tick(FPS)
@@ -63,11 +64,12 @@ while not finished:
                 vert_angle -= visual_field*dy/graphics.Yscreensize
         
                
-    visible_stars = data.what_we_see(hor_angle, vert_angle, visual_field)
+    visible_stars = data.what_we_see(hor_angle, vert_angle, visual_field, Time)
 
     for star in visible_stars:
         graphics.draw_star(conv_to_screen(star.phi, star.theta), star.name, star.id, star.brightness, visual_field)
 
     graphics.update()
+    Time += 1/60*time_speed
 
 pygame.quit()
