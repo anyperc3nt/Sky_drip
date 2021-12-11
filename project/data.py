@@ -5,19 +5,18 @@ from collections import namedtuple
 
 from settings import *
 
-
-#class Star:
- #   def __init__(self, phi, theta, brightness):
-  #      self.phi = phi
-  #      self.theta = theta
-   #     self.brightness = brightness
+# class Star:
+#   def __init__(self, phi, theta, brightness):
+#      self.phi = phi
+#      self.theta = theta
+#     self.brightness = brightness
 
 Star = namedtuple('Star', ['phi', 'theta', 'brightness', 'name', 'id'])
 
 
 def coord2angles(x, y, z):
     phi = np.arctan2(z, x)  # horizontal
-    theta = np.arctan2(y, np.sqrt(x**2+z**2))  # vertical (declination)
+    theta = np.arctan2(y, np.sqrt(x ** 2 + z ** 2))  # vertical (declination)
     return phi, theta
 
 
@@ -26,7 +25,7 @@ def init():
 
     global stars
 
-    data_frame = pd.read_csv(__file__[:-7]+'hygdata_v3.csv')
+    data_frame = pd.read_csv(__file__[:-7] + 'hygdata_v3.csv')
 
     num_stars = len(data_frame)
     x = data_frame['x'].values
@@ -42,29 +41,33 @@ def init():
 
     stars = []
 
-    #самая яркая звезда сириус, у нее магнитуда -1,67
-    #по этому мы берем -mag от -6,5 до 1,67
-    #а еще я не беру звезды ярче сириуса, потому что в датасете походу есть солнце и другие слишком яркие объекты
+    # самая яркая звезда сириус, у нее магнитуда -1,67
+    # по этому мы берем -mag от -6,5 до 1,67
+    # а еще я не беру звезды ярче сириуса, потому что в датасете походу есть солнце и другие слишком яркие объекты
 
     for i in range(num_stars):
-        if((-mag[i]) > -6.5) and (-mag[i] < 1.68):
-            s_brightness = (6.5 - mag[i])/(1.68+6.5)*255
+        if ((-mag[i]) > -6.5) and (-mag[i] < 1.68):
+            s_brightness = (6.5 - mag[i]) / (1.68 + 6.5) * 255
             stars.append(Star(phi[i], theta[i], s_brightness, names[i], ids[i]))
 
 
-def what_we_see(hor_angle, vert_angle, visual_field):
+def what_we_see(hor_angle, vert_angle, visual_field, Time):
     """возвращает относительные угловые координаты звезд, находящихся в угловом диапозоне видимости
-    
+
     hor_angle, vert_angle - углы направления зрения пользователя в радианах
     visual_field - угол обзора пользователя
     """
     global stars
 
+    delta_w = 0.00001
+
     visible_stars = []
 
     for a_star in stars:
-        if abs(a_star.phi - hor_angle) % (2*np.pi) <= visual_field / 2 and abs(a_star.theta - vert_angle) % (2*np.pi) <= visual_field / 2:
-            visible_star = Star((a_star.phi - hor_angle) % (2*np.pi), (a_star.theta - vert_angle) % (2*np.pi), a_star.brightness, a_star.name, a_star.id)
+        if abs(a_star.phi - hor_angle + delta_w*Time) % (2 * np.pi) <= visual_field / 2 and abs(a_star.theta - vert_angle) % (
+                2 * np.pi) <= visual_field / 2:
+            visible_star = Star((a_star.phi - hor_angle + delta_w*Time) % (2 * np.pi), (a_star.theta - vert_angle) % (2 * np.pi),
+                                a_star.brightness, a_star.name, a_star.id)
 
             visible_stars.append(visible_star)
 
