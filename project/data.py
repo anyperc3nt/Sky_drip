@@ -2,16 +2,12 @@ import numpy as np
 from numpy.lib.index_tricks import s_
 import pandas as pd
 from collections import namedtuple
+import math
 
-from settings import *
 
-# class Star:
-#   def __init__(self, phi, theta, brightness):
-#      self.phi = phi
-#      self.theta = theta
-#     self.brightness = brightness
 
 Star = namedtuple('Star', ['phi', 'theta', 'brightness', 'name', 'id'])
+Star_img = namedtuple('Star', ['x1', 'y1', 'brightness', 'name', 'id'])
 
 
 def coord2angles(x, y, z):
@@ -64,10 +60,15 @@ def what_we_see(hor_angle, vert_angle, visual_field, Time):
     visible_stars = []
 
     for a_star in stars:
-        if abs(a_star.phi - hor_angle + delta_w*Time) % (2 * np.pi) <= visual_field / 2 and abs(a_star.theta - vert_angle) % (
-                2 * np.pi) <= visual_field / 2:
-            visible_star = Star((a_star.phi - hor_angle + delta_w*Time) % (2 * np.pi), (a_star.theta - vert_angle) % (2 * np.pi),
-                                a_star.brightness, a_star.name, a_star.id)
+
+        theta = a_star.theta - vert_angle
+        phi = a_star.phi - hor_angle + delta_w*Time*abs(math.cos(vert_angle))
+        x1 = (math.tan(phi) / math.tan(visual_field / 2) + 1) / 2
+        y1 = (math.tan(theta) / math.tan(visual_field / 2) + 1) / 2
+
+        if 0 <= x1 <= 1 and 0 <= y1 <= 1:
+
+            visible_star = Star_img(x1, y1, a_star.brightness, a_star.name, a_star.id)
 
             visible_stars.append(visible_star)
 

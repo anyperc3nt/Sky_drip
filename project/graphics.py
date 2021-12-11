@@ -2,6 +2,7 @@ import pygame
 from pygame.draw import *
 from settings import *
 import pygame.freetype
+from data import Star_img
 
 """
 в качестве основных штук, с которыми этот модуль работает, имеет screen, 3 слоя для эффектов
@@ -24,8 +25,8 @@ def init():
     создает необходимые для отрисовки объектов и эффектов слои
     """
     pygame.font.init()
-    #global myfont
-    #myfont = pygame.freetype.SysFont('Comic Sans MS', 10)
+    # global myfont
+    # myfont = pygame.freetype.SysFont('Comic Sans MS', 10)
     global Xscreensize
     Xscreensize = int(pygame.display.Info().current_w)
     global Yscreensize
@@ -33,7 +34,7 @@ def init():
     print(Xscreensize)
 
     global screen
-    #screen = pygame.display.set_mode((Xscreensize, Yscreensize))
+    # screen = pygame.display.set_mode((Xscreensize, Yscreensize))
     screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
     pygame.display.update()
 
@@ -63,43 +64,47 @@ def init():
     global layer_black
     layer_black = pygame.Surface((Xscreensize, Yscreensize))
     layer_black = layer_black.convert_alpha()
-    layer_black.fill((0, 0, 0, 255-motionblur_force))
+    layer_black.fill((0, 0, 0, 255 - motionblur_force))
 
 
-def draw_star(coords, name, id, brightness, visual_field):
+def draw_star(star, visual_field):
     """отрисовывает звезду заданной яркости в точке x, y экрана
 
     coords - пара чисел (x,y)
     brightness - яркость от 0 до 255
     """
+    x1, y1, brightness, name, id = star
+
 
     brightness = int(brightness)
 
-    x, y = coords
+    x = x1 * Xscreensize
+    y = y1 * Yscreensize
 
-    scale = 120/180*3.14/visual_field
-    scale*=5*brightness/255+1
+
+    scale = 120 / 180 * 3.14 / visual_field
+    scale *= 5 * brightness / 255 + 1
     if scale < 1:
         scale = 1
 
     if brightness > 155:
         lightness = 255
     else:
-        lightness=brightness + 100
+        lightness = brightness + 100
 
     circle(layer_curr, (lightness, lightness, lightness), (x, y), int(scale))
-    #рисуем увеличенную версию звезды на слой glow
+    # рисуем увеличенную версию звезды на слой glow
     if glow_on:
-        circle(layer_glow, (lightness, lightness, lightness), (x, y), int(scale*glow_size))
+        circle(layer_glow, (lightness, lightness, lightness), (x, y), int(scale * glow_size))
     if text_on:
         if name == name:  # not nan
-            myfont = pygame.freetype.SysFont('Comic Sans MS', int(scale*4))
-            myfont.render_to(layer_text, coords, name, (255, 255, 255))
+            myfont = pygame.freetype.SysFont('Comic Sans MS', int(scale * 4))
+            myfont.render_to(layer_text, (x, y), name, (255, 255, 255))
 
 
 def glow_update():
     global layer_glow
-    layer_glow = pygame.transform.smoothscale(layer_glow, (int(Xscreensize/glow_blur), int(Yscreensize/glow_blur)))
+    layer_glow = pygame.transform.smoothscale(layer_glow, (int(Xscreensize / glow_blur), int(Yscreensize / glow_blur)))
     layer_glow = pygame.transform.smoothscale(layer_glow, (Xscreensize, Yscreensize))
     pygame.Surface.blit(screen, layer_glow, (0, 0))
     layer_glow.fill((0, 0, 0, 0))
@@ -139,5 +144,5 @@ def update():
 
     if text_on:
         text_update()
-    
+
     pygame.display.update()
