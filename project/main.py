@@ -1,31 +1,19 @@
 import numpy as np
 import pygame
-import math
 from pygame.constants import K_ESCAPE
 
-from pygame.version import ver
-
 import data
-import graphics
+from graphics import *
 from settings import *
-
-
-def conv_to_screen(phi, theta):
-    """конвертирует угловые координаты звезды в координаты на экране
-
-    phi, theta - углы по горизонтали и вертикали соответственно,
-    должны лежать в диапозоне от -visual_field/2 до visual_field/2
-    """
-
-    x = (math.tan(phi) / math.tan(visual_field / 2) + 1) / 2 * graphics.Xscreensize
-    y = (math.tan(theta) / math.tan(visual_field / 2) + 1) / 2 * graphics.Yscreensize
-
-    return int(x), int(y)
+import settings
+from interface import *
 
 
 pygame.init()
 data.init()
-graphics.init()
+
+graphics = Graphics()
+interface = Interface(graphics)
 
 clock = pygame.time.Clock()
 finished = False
@@ -33,10 +21,13 @@ moving = False
 
 FPS = 60
 
+#горизонтальный и вертикальный угол поворота зрения
 hor_angle = (0) / 180 * np.pi
 vert_angle = (0) / 180 * np.pi
 
-visual_field = 90 / 180 * np.pi
+#поле зрения
+visual_field = 60 / 180 * np.pi
+
 Time = 0
 
 while not finished:
@@ -49,6 +40,8 @@ while not finished:
         elif event.type == pygame.MOUSEBUTTONDOWN:
             if event.button == 1:
                 moving = True
+                x, y = event.pos
+                interface.check(x, y)
             elif event.button == 4:
                 visual_field /= 1.09
             elif event.button == 5:
@@ -63,13 +56,18 @@ while not finished:
                 dx, dy = event.rel
                 hor_angle -= visual_field * dx / graphics.Xscreensize
                 vert_angle -= visual_field * dy / graphics.Yscreensize
-
+    
     visible_stars = data.what_we_see(hor_angle, vert_angle, visual_field, Time)
 
     for star in visible_stars:
         graphics.draw_star(star, visual_field)
 
+    interface.buttons_update()
+    interface.information_update(
+        [visual_field*180/np.pi, hor_angle*180/np.pi, vert_angle*180/np.pi, settings.time_speed])
     graphics.update()
-    Time += 1 / 60 * time_speed
+
+    pygame.display.update()
+    Time += 1 / 60 * settings.time_speed
 
 pygame.quit()
