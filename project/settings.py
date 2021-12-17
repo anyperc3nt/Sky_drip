@@ -11,10 +11,14 @@ glow_on = True
 text_on = True
 
 """настройки размытия в движении"""
-motionblur_brightness = 120
-motionblur_force = 215
+motionblur_brightness = 200
+motionblur_force = 248
 
 """настройка свечения звезд"""
-glow_size = 10
-glow_blur = 25
-glow_brightness = 40
+glow_size = 5
+glow_blur = 15
+glow_brightness = 70
+
+
+"""настройка времени"""
+time_speed = 1

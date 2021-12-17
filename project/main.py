@@ -1,30 +1,19 @@
 import numpy as np
 import pygame
-import math
 from pygame.constants import K_ESCAPE
 
-from pygame.version import ver
-
 import data
-import graphics
+from graphics import *
 from settings import *
-
-def conv_to_screen(phi, theta):
-    """конвертирует угловые координаты звезды в координаты на экране
-
-    phi, theta - углы по горизонтали и вертикали соответственно,
-    должны лежать в диапозоне от -visual_field/2 до visual_field/2
-    """
-
-    x = (math.sin(phi)/math.sin(visual_field/2)+1)/2*graphics.Xscreensize
-    y = (math.sin(theta)/math.sin(visual_field/2)+1)/2*graphics.Yscreensize
-
-    return int(x), int(y)
+import settings
+from interface import *
 
 
 pygame.init()
 data.init()
-graphics.init()
+
+graphics = Graphics()
+interface = Interface(graphics)
 
 clock = pygame.time.Clock()
 finished = False
@@ -32,46 +21,53 @@ moving = False
 
 FPS = 60
 
-hor_angle = (0)/180*np.pi
-vert_angle = (0)/180*np.pi
+#горизонтальный и вертикальный угол поворота зрения
+hor_angle = (0) / 180 * np.pi
+vert_angle = (0) / 180 * np.pi
 
-visual_field = 120/180*np.pi
+#поле зрения
+visual_field = 60 / 180 * np.pi
+
+Time = 0
 
 while not finished:
     clock.tick(FPS)
     for event in pygame.event.get():
 
-        if event.type == pygame.KEYDOWN:
-            if event.key == K_ESCAPE:
-                finished = True 
-
-        if event.type == pygame.QUIT:
+        if event.type == pygame.KEYDOWN and event.key == K_ESCAPE or event.type == pygame.QUIT:
             finished = True
 
-        if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
-            moving = True
-        
-        if event.type == pygame.MOUSEBUTTONUP and event.button == 1:
-                moving = False
+        elif event.type == pygame.MOUSEBUTTONDOWN:
+            if event.button == 1:
+                moving = True
+                x, y = event.pos
+                interface.check(x, y)
+            elif event.button == 4:
+                visual_field /= 1.09
+            elif event.button == 5:
+                if (visual_field < np.pi * 0.9):
+                    visual_field *= 1.09
 
-        if event.type == pygame.MOUSEMOTION:
+        elif event.type == pygame.MOUSEBUTTONUP and event.button == 1:
+            moving = False
+
+        elif event.type == pygame.MOUSEMOTION:
             if moving:
                 dx, dy = event.rel
-                hor_angle -= visual_field*dx/graphics.Xscreensize
-                vert_angle -= visual_field*dy/graphics.Yscreensize
-                
-        if event.type == pygame.MOUSEBUTTONDOWN:
-            if event.button == 4:
-                visual_field /= 1.09
-            if event.button == 5:
-                if(visual_field < np.pi*0.9):
-                    visual_field *= 1.09
-               
-    visible_stars = data.what_we_see(hor_angle, vert_angle, visual_field)
+                hor_angle -= visual_field * dx / graphics.Xscreensize
+                vert_angle -= visual_field * dy / graphics.Yscreensize
+    
+    visible_stars = data.what_we_see(hor_angle, vert_angle, visual_field, Time)
 
     for star in visible_stars:
-        graphics.draw_star(conv_to_screen(star.phi, star.theta), star.name, star.id, star.brightness, visual_field)
+        graphics.draw_star(star, visual_field)
 
+    interface.buttons_update()
+    interface.information_update(
+        [visual_field*180/np.pi, hor_angle*180/np.pi, vert_angle*180/np.pi, settings.time_speed])
     graphics.update()
+
+    pygame.display.update()
+    Time += 1 / 60 * settings.time_speed
 
 pygame.quit()
